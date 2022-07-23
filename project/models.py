@@ -1,0 +1,37 @@
+from sqlalchemy import Column, String, Integer, Float, ForeignKey
+
+from project.setup.db import models
+
+
+class Genre(models.Base):
+    __tablename__ = 'genres'
+
+    name = Column(String(100), unique=True, nullable=False)
+
+
+class Directors(models.Base):
+    __tablename__ = 'director'
+
+    name = Column(String(100), unique=True, nullable=False)
+
+
+class Movie(models.Base):
+    __tablename__ = 'movie'
+
+    title = Column(String(100), unique=True, nullable=False)
+    description = Column(String(100), unique=True, nullable=False)
+    trailer = Column(String(100), unique=True, nullable=False)
+    year = Column(Integer, nullable=False)
+    rating = Column(Float, nullable=False)
+    genre_id = Column(Integer, ForeignKey(f'{Genre.__tablename__}.id'), nullable=False)
+    director_id = Column(Integer, ForeignKey(f'{Directors.__tablename__}.id'), nullable=False)
+
+
+class User(models.Base):
+    __tablename__ = 'user'
+
+    email = Column(String(100), unique=True, nullable=False)
+    password = Column(String(200), unique=True, nullable=False)
+    name = Column(String(100), unique=True, nullable=False)
+    surname = Column(String(100), unique=True, nullable=False)
+    favourite_genre = Column(Integer, ForeignKey(f'{Genre.__tablename__}.id'), nullable=False)
