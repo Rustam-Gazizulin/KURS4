@@ -6,8 +6,8 @@ class GenresDAO(BaseDAO[Genre]):
     __model__ = Genre
 
 
-class DirectorsDAO(BaseDAO[Directors]):
-    __model__ = Directors
+class DirectorsDAO(BaseDAO[Director]):
+    __model__ = Director
 
 
 class MovieDAO(BaseDAO[Movie]):

@@ -9,14 +9,14 @@ class Genre(models.Base):
     name = Column(String(100), unique=True, nullable=False)
 
 
-class Directors(models.Base):
-    __tablename__ = 'director'
+class Director(models.Base):
+    __tablename__ = 'directors'
 
     name = Column(String(100), unique=True, nullable=False)
 
 
 class Movie(models.Base):
-    __tablename__ = 'movie'
+    __tablename__ = 'movies'
 
     title = Column(String(100), unique=False, nullable=False)
     description = Column(String(100), unique=False, nullable=False)
@@ -24,7 +24,7 @@ class Movie(models.Base):
     year = Column(Integer, nullable=False)
     rating = Column(Float, nullable=False)
     genre_id = Column(Integer, ForeignKey(f'{Genre.__tablename__}.id'), nullable=False)
-    director_id = Column(Integer, ForeignKey(f'{Directors.__tablename__}.id'), nullable=False)
+    director_id = Column(Integer, ForeignKey(f'{Director.__tablename__}.id'), nullable=False)
 
 
 class User(models.Base):
