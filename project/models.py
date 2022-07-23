@@ -18,9 +18,9 @@ class Directors(models.Base):
 class Movie(models.Base):
     __tablename__ = 'movie'
 
-    title = Column(String(100), unique=True, nullable=False)
-    description = Column(String(100), unique=True, nullable=False)
-    trailer = Column(String(100), unique=True, nullable=False)
+    title = Column(String(100), unique=False, nullable=False)
+    description = Column(String(100), unique=False, nullable=False)
+    trailer = Column(String(100), unique=False, nullable=False)
     year = Column(Integer, nullable=False)
     rating = Column(Float, nullable=False)
     genre_id = Column(Integer, ForeignKey(f'{Genre.__tablename__}.id'), nullable=False)
