@@ -24,13 +24,13 @@ movie: Model = api.model('Фильмы', {
     'director': fields.Nested(director),
 })
 
-user: Model = api.model('Пользователm', {
+user: Model = api.model('Пользователь', {
     'id': fields.Integer(required=True, example=1),
     'email': fields.String(required=True, max_length=100, example='qwerty123@mail.ru'),
     'password': fields.String(required=True, max_length=100, example='12345'),
     'name': fields.String(required=True, max_length=100, example='Kolia'),
     'surname': fields.String(required=True, max_length=100, example='Kolov'),
-    'favorite_genre': fields.Nested(genre),
+    'genre': fields.Nested(genre),
 })
 
 
