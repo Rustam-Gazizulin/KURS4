@@ -9,8 +9,6 @@ import jwt
 
 from flask import current_app
 
-from project.services import UsersService
-
 
 def __generate_password_digest(password: str) -> bytes:
     return hashlib.pbkdf2_hmac(
@@ -34,22 +32,21 @@ def compare_passwords_hash(password_hash, other_password) -> bool:
 
 
 class AuthsService:
-    def __init__(self, user_service: UsersService):
+    def __init__(self, user_service):
         self.user_service = user_service
 
-    def generate_tokens(self, email, password, is_refresh=False):
+    @staticmethod
+    def generate_tokens(user, password, is_refresh=False):
         """
         Метод который генерирует access_token и refresh_token, получая email и пароль пользователя
         с проверкой is_refresh (создание новых токенов, а не перегенерация refresh_token)
         """
 
-        user = self.user_service.get_by_email(email)
-
         if user is None:
             raise abort(404)
 
         if not is_refresh:
-            if not compare_passwords_hash(user.password) == password:
+            if not compare_passwords_hash(user.password, password):
                 abort(400)
 
         data = {

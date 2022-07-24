@@ -4,7 +4,7 @@ from project.dao import UsersDAO
 
 from project.exceptions import ItemNotFound
 from project.models import User
-from project.tools.security import generate_password_hash
+from project.tools.security import AuthsService
 
 
 class UsersService:
@@ -22,8 +22,8 @@ class UsersService:
     def create_user(self, login, password):
         self.dao.create(login, password)
 
-    def check(self, login, password):
-        result = self.dao.get_user_by_login(login)
-        if len(result):
-            if result.get('password') == generate_password_hash(password):
+    def get_user_by_login(self, login):
+        return self.dao.get_user_by_login(login)
 
+    def check(self, login, password):
+        return AuthsService.generate_tokens(user=self.get_user_by_login(login), password=password)
