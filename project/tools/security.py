@@ -31,41 +31,48 @@ def compare_passwords_hash(password_hash, other_password) -> bool:
     return password_hash == generate_password_hash(other_password)
 
 
-class AuthsService:
-    def __init__(self, user_service):
-        self.user_service = user_service
+def generate_tokens(email, password, password_hash=None, is_refresh=False):
+    """
+    Метод который генерирует access_token и refresh_token, получая email и пароль пользователя
+    с проверкой is_refresh (создание новых токенов, а не перегенерация refresh_token)
+    """
 
-    @staticmethod
-    def generate_tokens(user, password, is_refresh=False):
-        """
-        Метод который генерирует access_token и refresh_token, получая email и пароль пользователя
-        с проверкой is_refresh (создание новых токенов, а не перегенерация refresh_token)
-        """
+    if email is None:
+        return None
 
-        if user is None:
-            raise abort(404)
+    if not is_refresh:
+        if not compare_passwords_hash(password, password_hash):
+            return None
 
-        if not is_refresh:
-            if not compare_passwords_hash(user.password, password):
-                abort(400)
+    data = {
+        "email": email,
+        "password": password
+    }
 
-        data = {
-            "email": user.email,
-            "password": user.password
-        }
+    # 15 min for access_token
+    min15 = datetime.datetime.utcnow() + datetime.timedelta(minutes=current_app.config['TOKEN_EXPIRE_MINUTES'])
+    data["exp"] = calendar.timegm(min15.timetuple())
+    access_token = jwt.encode(data, key=current_app.config['SECRET_KEY'], algorithm=current_app.config['ALGORITHM'])
 
-        # 15 min for access_token
-        min15 = datetime.datetime.utcnow() + datetime.timedelta(minutes=current_app.config['TOKEN_EXPIRE_MINUTES'])
-        data["exp"] = calendar.timegm(min15.timetuple())
-        access_token = jwt.encode(data, key=current_app.config['SECRET_KEY'], algorithm=current_app.config['ALGORITHM'])
+    # 130 days for refresh_token
+    days130 = datetime.datetime.utcnow() + datetime.timedelta(days=current_app.config['TOKEN_EXPIRE_DAYS'])
+    data["exp"] = calendar.timegm(days130.timetuple())
+    refresh_token = jwt.encode(data, key=current_app.config['SECRET_KEY'],
+                               algorithm=current_app.config['ALGORITHM'])
 
-        # 130 days for refresh_token
-        days130 = datetime.datetime.utcnow() + datetime.timedelta(days=current_app.config['TOKEN_EXPIRE_DAYS'])
-        data["exp"] = calendar.timegm(days130.timetuple())
-        refresh_token = jwt.encode(data, key=current_app.config['SECRET_KEY'],
-                                   algorithm=current_app.config['ALGORITHM'])
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
 
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        }
+
+def approve_refresh_token(refresh_token):
+    """
+    Метод получает информацию о пользователе, извлекает значение email и по рефреш токену
+    генерирует токен
+    """
+    data = jwt.decode(jwt=refresh_token, key=current_app.config['SECRET_KEY'],
+                      algorithms=[current_app.config['ALGORITHM']])
+    email = data.get('email')
+    password = data.get('password')
+    return generate_tokens(email, password, is_refresh=True)
