@@ -41,7 +41,7 @@ def generate_tokens(email, password, password_hash=None, is_refresh=False):
         return None
 
     if not is_refresh:
-        if not compare_passwords_hash(password, password_hash):
+        if not compare_passwords_hash(other_password=password, password_hash=password_hash):
             return None
 
     data = {
