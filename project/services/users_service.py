@@ -4,7 +4,7 @@ from project.dao import UsersDAO
 
 from project.exceptions import ItemNotFound
 from project.models import User
-from project.tools.security import generate_tokens, approve_refresh_token
+from project.tools.security import generate_tokens, approve_refresh_token, get_data_from_token
 
 
 class UsersService:
@@ -31,3 +31,15 @@ class UsersService:
 
     def update_token(self, refresh_token):
         return approve_refresh_token(refresh_token)
+
+    def get_by_user_token(self, refresh_token):
+        data = get_data_from_token(refresh_token)
+
+        if data:
+            return self.get_user_by_login(data.get('email'))
+
+    def update_user(self, data: dict, refresh_token):
+        user = self.get_by_user_token()
+        if user:
+            self.dao.update(login=user.email, data=data)
+            return self.get_by_user_token(refresh_token)

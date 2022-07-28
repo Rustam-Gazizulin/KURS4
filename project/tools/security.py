@@ -76,3 +76,17 @@ def approve_refresh_token(refresh_token):
     email = data.get('email')
     password = data.get('password')
     return generate_tokens(email, password, is_refresh=True)
+
+
+def get_data_from_token(refresh_token):
+    """
+    Метод получает информацию о пользователе, извлекает значение email и по рефреш токену
+    генерирует токен
+    """
+    try:
+        data = jwt.decode(jwt=refresh_token, key=current_app.config['SECRET_KEY'],
+                          algorithms=[current_app.config['ALGORITHM']])
+        return data
+    except Exception:
+        return None
+
