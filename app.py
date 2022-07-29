@@ -1,16 +1,16 @@
 from flask import Flask, render_template
 from flask_restx import Api
 
-from config import Config
-from setup_db import db
-from views import directors_ns
+from project.config import config
+from project.setup.db import db
+from project.views.main import directors_ns
 
 api = Api(title="Flask Course Project 3", doc="/docs")
 
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config)
 
     @app.route('/')
     def index():
