@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 
 from project.exceptions import BaseServiceError
@@ -14,6 +14,10 @@ def base_service_error_handler(exception: BaseServiceError):
 def create_app(config_obj):
     app = Flask(__name__)
     app.config.from_object(config_obj)
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
 
     CORS(app=app)
     db.init_app(app)
